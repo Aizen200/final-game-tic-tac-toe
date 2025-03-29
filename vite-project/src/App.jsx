@@ -1,35 +1,73 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import "./app.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [board, setBoard] = useState(Array(9).fill(""));
+  const [turnO, setTurnO] = useState(true);
+  const [winner, setWinner] = useState(null);
+
+  const winningCases = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+
+  const checkWin = (newBoard) => {
+    for (let pattern of winningCases) {
+      const [a, b, c] = pattern;
+      if (
+        newBoard[a] &&
+        newBoard[a] === newBoard[b] &&
+        newBoard[b] === newBoard[c]
+      ) {
+        setWinner(newBoard[a]);
+        return;
+      }
+    }
+  };
+
+  const handleClick = (index) => {
+    if (board[index] || winner) return;
+    const newBoard = [...board];
+    newBoard[index] = turnO ? "O" : "X";
+    setBoard(newBoard);
+    setTurnO(!turnO);
+    checkWin(newBoard);
+  };
+
+  const resetGame = () => {
+    setBoard(Array(9).fill(""));
+    setTurnO(true);
+    setWinner(null);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="container">
+      {winner && (
+        <div id="winner-container">
+          <p>Winner is {winner}</p>
+          <button onClick={resetGame}>New Game</button>
+        </div>
+      )}
+      <h1>Tic Tac Toe</h1>
+      <div id="game">
+        {board.map((value, index) => (
+          <button
+            key={index}
+            className="box"
+            onClick={() => handleClick(index)}
+            disabled={!!value || winner}
+          >
+            {value}
+          </button>
+        ))}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+      <button onClick={resetGame}>Reset</button>
+    </div>
+  );
 }
-
-export default App

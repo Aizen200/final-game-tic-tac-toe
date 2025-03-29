@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./app.css";
+import "./App.css";
 
 export default function App() {
   const [board, setBoard] = useState(Array(9).fill(""));
